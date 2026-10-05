@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RARA: Robust Policy Fine-Tuning through Retrieval-Anchored Representation Alignment</title>
+  <meta name="description"
+    content="RARA adapts pre-trained robot policies to new tasks while keeping their robustness, by aligning to and anchoring the representations of retrieved pre-training demonstrations.">
+  <meta name="keywords" content="robot learning, fine-tuning, representation alignment, retrieval, VLA, robustness">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+</head>
+
+<body>
+
+  <!-- ===================== Header ===================== -->
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop has-text-centered">
+        <h1 class="title publication-title">RARA</h1>
+        <p class="publication-subtitle">Robust Policy Fine-Tuning through Retrieval-Anchored<br>
+          Representation Alignment for Robotic Manipulation</p>
+
+        <div class="publication-authors">
+          <span class="author-block"><a href="https://scholar.google.com/citations?user=sIY8FtgAAAAJ&amp;hl=en">Xuhui Kang</a></span>
+          <span class="author-block"><a href="https://seansungwooklee.github.io/">Sung-Wook Lee</a></span>
+          <span class="author-block"><a href="https://yanzhuang12.github.io/">Yan Zhuang</a></span>
+          <span class="author-block"><a href="https://luosuu.github.io/">Tianle Zhong</a></span>
+          <span class="author-block"><a href="https://yenlingkuo.com/">Yen-Ling Kuo</a></span>
+        </div>
+        <div class="affiliation">University of Virginia</div>
+        <div class="emails">{xuhui, dcs3zc, yyx3hd, fad3ew, ylkuo}@virginia.edu</div>
+        <img src="./static/images/uva_logo.png" alt="University of Virginia" class="affiliation-logo" width="1199"
+          height="246">
+
+        <div class="publication-links">
+          <!-- TODO: add the arXiv link. -->
+          <a href="" class="button is-dark">
+            <span class="icon"><svg class="svg-icon" viewBox="0 0 384 512" aria-hidden="true" focusable="false"><path fill="currentColor" d="M369.9 97.9L286 14C277 5 264.8-.1 252.1-.1H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V131.9c0-12.7-5.1-25-14.1-34zM332.1 128H256V51.9l76.1 76.1zM48 464V48h160v104c0 13.3 10.7 24 24 24h104v288H48zm250.2-143.7c-12.2-12-47-8.7-64.4-6.5-17.2-10.5-28.7-25-36.8-46.3 3.9-16.1 10.1-40.6 5.4-56-4.2-26.2-37.8-23.6-42.6-5.9-4.4 16.1-.4 38.5 7 67.1-10 23.9-24.9 56-35.4 74.4-20 10.3-47 26.2-51 46.2-3.3 15.8 26 55.2 76.1-31.2 22.4-7.4 46.8-16.5 68.4-20.1 18.9 10.2 41 17 55.8 17 25.5 0 28-28.2 17.5-38.7zm-198.1 77.8c5.1-13.7 24.5-29.5 30.4-35-19 30.3-30.4 35.7-30.4 35zm81.6-190.6c7.4 0 6.7 32.1 1.8 40.8-4.4-13.9-4.3-40.8-1.8-40.8zm-24.4 136.6c9.7-16.9 18-37 24.7-54.7 8.3 15.1 18.9 27.2 30.1 35.5-20.8 4.3-38.9 13.1-54.8 19.2zm131.6-5s-5 6-37.3-7.8c35.1-2.6 40.9 5.4 37.3 7.8z"/></svg></span>
+            <span>arXiv</span>
+          </a>
+          <a href="https://github.com/Shua-Kang/RARA" class="button is-dark">
+            <span class="icon"><svg class="svg-icon" viewBox="0 0 496 512" aria-hidden="true" focusable="false"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+            <span>Code</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Teaser ===================== -->
+  <section class="section" style="padding-top: 0.5rem;">
+    <div class="container is-max-desktop">
+      <figure class="paper-figure">
+        <img src="./static/images/teaser.webp" alt="Overview of RARA: pre-training, retrieval and alignment, deployment"
+          width="2000" height="825">
+        <figcaption>
+          A policy is first pre-trained on diverse robot data. To adapt it to a target task, RARA retrieves
+          pre-training demonstrations of a similar skill, such as removing a lid from a flask for the target task of
+          opening a blender lid. It aligns the target representation with their pre-trained representation and keeps
+          that representation as an anchor during fine-tuning.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===================== Abstract ===================== -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="section-title">Abstract</h2>
+      <div class="prose has-text-justified">
+        <p>
+          Pre-trained robot policies, such as Vision-Language-Action (VLA) models, provide a strong foundation for
+          generalist robotic manipulation, but adapting them to new tasks with only a few demonstrations remains
+          challenging. Directly fine-tuning a pre-trained policy often achieves strong in-distribution performance, yet
+          it can distort the representations learned during pre-training and weaken the model's generalization ability
+          under out-of-distribution shifts. We propose Retrieval-Anchored Representation Alignment (RARA), a two-stage
+          adaptation method, to address this issue. First, RARA retrieves pre-training demonstrations with similar task
+          intent and motion, and aligns the policy's representations of the target demonstrations with the pre-trained
+          representations of the retrieved demonstrations. Second, RARA fine-tunes the policy on the target
+          demonstrations while limiting how much its representations of the retrieved demonstrations change during
+          fine-tuning. Experiments with Diffusion Policy and GR00T on 13 tasks in RoboTwin, RoboCasa, and on a real
+          robot show that RARA improves the average success of fine-tuning by 9.5 points in-distribution and 13.6 points
+          out-of-distribution, and outperforms all compared baselines.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Method ===================== -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="section-title">Method</h2>
+
+      <h3 class="subsection-title">Retrieving relevant pre-training demonstrations</h3>
+      <div class="prose">
+        <p>
+          RARA looks for relevance at two levels. A relevant <em>demonstration</em> performs the same type of task as the
+          target, so RARA retrieves demonstrations whose task instructions are similar to the target's. A relevant
+          <em>frame</em> is at the same step of the task as a target frame, so RARA pairs frames whose action chunks are
+          close under dynamic time warping. Both levels are needed: action similarity alone can pair a target frame
+          with a frame from a different task.
+        </p>
+      </div>
+      <figure class="paper-figure narrow">
+        <img src="./static/images/retrieval.webp" alt="Retrieval with and without the instruction filter" width="1800"
+          height="916" loading="lazy">
+        <figcaption>
+          Retrieval for the target task Open Blender Lid. Selecting by action similarity alone can return similar action
+          chunks from a different task (red); retrieving by the task instruction returns the same kind of task (green).
+        </figcaption>
+      </figure>
+
+      <h3 class="subsection-title">Two stages</h3>
+      <div class="prose">
+        <p>
+          <strong>Stage 1: align to the pre-trained representation.</strong> Before fine-tuning, RARA pulls the
+          representation of each target frame toward the pre-trained representation of retrieved frames with similar
+          action chunks, and pushes it away from frames with different ones. The pre-trained policy has seen these
+          stages of the motion under many visual conditions, so the target frames can reuse this robust representation
+          instead of being fit from a few demonstrations.
+        </p>
+        <p>
+          <strong>Stage 2: fine-tune with an anchor.</strong> RARA then fine-tunes the policy on the target
+          demonstrations while an anchor loss keeps its representations of the retrieved demonstrations close to their
+          pre-trained values. The anchor acts on retrieved demonstrations rather than on the target observations, so it
+          does not restrict how the policy adapts to the target task.
+        </p>
+      </div>
+      <figure class="paper-figure">
+        <img src="./static/images/stage1.webp" alt="Stage 1 contrastive alignment and UMAP before and after" width="2000"
+          height="505" loading="lazy">
+        <figcaption>
+          Stage 1. (a) For a target frame, retrieved frames with similar action chunks (small DTW distance) are pulled
+          closer and frames with different action chunks are pushed away. (b) UMAP of the representations before and
+          after Stage 1: target representations (blue) move toward those of the retrieved pre-training data (red).
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===================== Results ===================== -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="section-title">Results</h2>
+      <div class="prose">
+        <p>
+          We fine-tune a Diffusion Policy pre-trained on about 2k RoboTwin demonstrations, and GR00T N1.7 pre-trained on
+          DROID, on 13 target tasks in RoboTwin, RoboCasa and on a real Franka robot. Each policy is evaluated in the
+          conditions covered by its demonstrations (ID) and under new camera poses, backgrounds, distractors, objects or
+          object positions (OOD).
+        </p>
+      </div>
+      <figure class="paper-figure">
+        <img src="./static/images/environments.webp" alt="ID and OOD scenes in RoboTwin, RoboCasa and the real robot"
+          width="2000" height="787" loading="lazy">
+        <figcaption>ID (top) and OOD (bottom) scenes for one RoboTwin, one RoboCasa and one real-robot task.</figcaption>
+      </figure>
+
+      <div class="key-numbers">
+        <div class="key-number">
+          <div class="value">+9.5</div>
+          <div class="label">ID success (points)</div>
+        </div>
+        <div class="key-number">
+          <div class="value">+13.6</div>
+          <div class="label">OOD success (points)</div>
+        </div>
+      </div>
+      <p class="table-note has-text-centered">Average gain of RARA over fine-tuning across all 13 tasks.</p>
+
+      <div class="table-wrap">
+        <table class="table results is-fullwidth">
+          <thead>
+            <tr>
+              <th rowspan="2">Method</th>
+              <th colspan="2">RoboTwin (Diffusion Policy)</th>
+              <th colspan="2">RoboCasa (GR00T N1.7)</th>
+            </tr>
+            <tr>
+              <th>ID</th>
+              <th>OOD</th>
+              <th>ID</th>
+              <th>OOD</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Fine-tuning (FT)</td><td>67.4</td><td>47.3</td><td>69.2</td><td>44.3</td></tr>
+            <tr><td>Co-FT</td><td>64.4</td><td>47.6</td><td>67.1</td><td>43.7</td></tr>
+            <tr><td>STRAP</td><td>72.6</td><td>52.4</td><td>66.1</td><td>48.1</td></tr>
+            <tr><td>BlindVLA</td><td>67.9</td><td>47.2</td><td>68.5</td><td>46.8</td></tr>
+            <tr class="ours"><td>RARA (ours)</td><td>76.0</td><td>58.3</td><td>74.0</td><td>55.5</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">Success rate (%), averaged over 4 RoboTwin and 5 RoboCasa tasks and three training seeds.
+        Per-task results are in the paper.</p>
+    </div>
+  </section>
+
+  <!-- ===================== Rollouts ===================== -->
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="section-title">Rollouts</h2>
+
+      <!-- RoboTwin -->
+      <h3 class="subsection-title">RoboTwin</h3>
+      <div class="rollout-block">
+        <div class="rollout-header">
+          <div class="buttons has-addons switch" data-key="task">
+            <button class="button is-small is-selected" data-value="move_pill_bottle">Move Pill Bottle</button>
+            <button class="button is-small" data-value="click_alarm_clock">Click Alarm Clock</button>
+          </div>
+        </div>
+        <div class="columns is-multiline is-mobile is-variable is-2 robotwin-grid">
+          <div class="column">
+            <div class="video-label">FT <span class="tag-fail">fail</span></div>
+            <video class="rollout" data-src="./static/videos/robotwin/{task}_ft.mp4" muted loop playsinline autoplay
+              preload="metadata"></video>
+          </div>
+          <div class="column">
+            <div class="video-label">Co-FT <span class="tag-fail">fail</span></div>
+            <video class="rollout" data-src="./static/videos/robotwin/{task}_coft.mp4" muted loop playsinline autoplay
+              preload="metadata"></video>
+          </div>
+          <div class="column">
+            <div class="video-label">STRAP <span class="tag-fail">fail</span></div>
+            <video class="rollout" data-src="./static/videos/robotwin/{task}_strap.mp4" muted loop playsinline autoplay
+              preload="metadata"></video>
+          </div>
+          <div class="column">
+            <div class="video-label">BlindVLA <span class="tag-fail">fail</span></div>
+            <video class="rollout" data-src="./static/videos/robotwin/{task}_blindvla.mp4" muted loop playsinline
+              autoplay preload="metadata"></video>
+          </div>
+          <div class="column">
+            <div class="video-label ours">RARA (ours) <span class="tag-success">success</span></div>
+            <video class="rollout" data-src="./static/videos/robotwin/{task}_rara.mp4" muted loop playsinline autoplay
+              preload="metadata"></video>
+          </div>
+        </div>
+        <p class="table-note">All methods start from the same scene.</p>
+      </div>
+
+      <!-- RoboCasa -->
+      <h3 class="subsection-title">RoboCasa</h3>
+      <div class="rollout-block">
+        <div class="rollout-header">
+          <div class="buttons has-addons switch" data-key="split">
+            <button class="button is-small" data-value="id">ID</button>
+            <button class="button is-small is-selected" data-value="ood">OOD</button>
+          </div>
+          <div class="buttons has-addons switch" data-key="ep">
+            <button class="button is-small is-selected" data-value="1">Episode 1</button>
+            <button class="button is-small" data-value="2">Episode 2</button>
+            <button class="button is-small" data-value="3">Episode 3</button>
+          </div>
+        </div>
+        <div class="robocasa-grid">
+          <div></div>
+          <div class="video-label">FT <span class="tag-fail">fail</span></div>
+          <div class="video-label">BlindVLA <span class="tag-fail">fail</span></div>
+          <div class="video-label ours">RARA (ours) <span class="tag-success">success</span></div>
+
+          <div class="grid-task">Open Blender Lid</div>
+          <video class="rollout" data-src="./static/videos/robocasa/open_blender_lid_{split}_{ep}_ft.mp4" muted loop playsinline autoplay preload="metadata"></video>
+          <video class="rollout" data-src="./static/videos/robocasa/open_blender_lid_{split}_{ep}_blindvla.mp4" muted loop playsinline autoplay preload="metadata"></video>
+          <video class="rollout" data-src="./static/videos/robocasa/open_blender_lid_{split}_{ep}_rara.mp4" muted loop playsinline autoplay preload="metadata"></video>
+
+          <div class="grid-task">Open Cabinet</div>
+          <video class="rollout" data-src="./static/videos/robocasa/open_cabinet_{split}_{ep}_ft.mp4" muted loop playsinline autoplay preload="metadata"></video>
+          <video class="rollout" data-src="./static/videos/robocasa/open_cabinet_{split}_{ep}_blindvla.mp4" muted loop playsinline autoplay preload="metadata"></video>
+          <video class="rollout" data-src="./static/videos/robocasa/open_cabinet_{split}_{ep}_rara.mp4" muted loop playsinline autoplay preload="metadata"></video>
+
+          <div class="grid-task">Turn On Toaster</div>
+          <video class="rollout" data-src="./static/videos/robocasa/turn_on_toaster_{split}_{ep}_ft.mp4" muted loop playsinline autoplay preload="metadata"></video>
+          <video class="rollout" data-src="./static/videos/robocasa/turn_on_toaster_{split}_{ep}_blindvla.mp4" muted loop playsinline autoplay preload="metadata"></video>
+          <video class="rollout" data-src="./static/videos/robocasa/turn_on_toaster_{split}_{ep}_rara.mp4" muted loop playsinline autoplay preload="metadata"></video>
+
+          <div class="grid-task">Pick-Place to Drawer</div>
+          <video class="rollout" data-src="./static/videos/robocasa/pick_place_drawer_{split}_{ep}_ft.mp4" muted loop playsinline autoplay preload="metadata"></video>
+          <video class="rollout" data-src="./static/videos/robocasa/pick_place_drawer_{split}_{ep}_blindvla.mp4" muted loop playsinline autoplay preload="metadata"></video>
+          <video class="rollout" data-src="./static/videos/robocasa/pick_place_drawer_{split}_{ep}_rara.mp4" muted loop playsinline autoplay preload="metadata"></video>
+        </div>
+        <p class="table-note">In each row, all methods start from the same scene.</p>
+      </div>
+
+      <!-- Real robot -->
+      <h3 class="subsection-title">Real robot</h3>
+      <p class="table-note">Front view, with the wrist camera at the bottom right.</p>
+
+      <div class="columns is-variable is-5 real-row">
+        <div class="column is-half">
+        <div class="rollout-block">
+          <div class="rollout-header">
+            <span class="rollout-task">Put 3 Toys in Basket</span>
+            <div class="buttons has-addons switch" data-key="ep">
+              <button class="button is-small is-selected" data-value="1">Episode 1</button>
+              <button class="button is-small" data-value="2">Episode 2</button>
+              <button class="button is-small" data-value="3">Episode 3</button>
+            </div>
+          </div>
+          <div class="columns is-mobile is-variable is-2">
+            <div class="column">
+              <div class="video-label">BlindVLA</div>
+              <video class="rollout" data-src="./static/videos/real/toys_blindvla_{ep}.mp4" muted loop playsinline
+                autoplay preload="metadata"></video>
+            </div>
+            <div class="column">
+              <div class="video-label ours">RARA (ours)</div>
+              <video class="rollout" data-src="./static/videos/real/toys_rara_{ep}.mp4" muted loop playsinline
+                autoplay preload="metadata"></video>
+            </div>
+          </div>
+        </div>
+        </div>
+        <div class="column is-half">
+        <div class="rollout-block">
+          <div class="rollout-header">
+            <span class="rollout-task">Put Bread in Toaster</span>
+          </div>
+          <div class="columns is-mobile is-variable is-2">
+            <div class="column">
+              <div class="video-label">BlindVLA</div>
+              <video class="rollout" data-src="./static/videos/real/toaster_blindvla_1.mp4" muted loop playsinline
+                autoplay preload="metadata"></video>
+            </div>
+            <div class="column">
+              <div class="video-label ours">RARA (ours)</div>
+              <video class="rollout" data-src="./static/videos/real/toaster_rara_1.mp4" muted loop playsinline
+                autoplay preload="metadata"></video>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== BibTeX ===================== -->
+  <section class="section" id="bibtex">
+    <div class="container is-max-desktop">
+      <h2 class="section-title">BibTeX</h2>
+      <div class="bibtex">
+        <button class="button is-small copy-button" type="button" onclick="copyBibtex(this)">
+          <span class="icon is-small"><svg class="svg-icon" viewBox="0 0 448 512" aria-hidden="true" focusable="false"><path fill="currentColor" d="M433.941 65.941l-51.882-51.882A48 48 0 0 0 348.118 0H176c-26.51 0-48 21.49-48 48v48H48c-26.51 0-48 21.49-48 48v320c0 26.51 21.49 48 48 48h224c26.51 0 48-21.49 48-48v-48h80c26.51 0 48-21.49 48-48V99.882a48 48 0 0 0-14.059-33.941zM266 464H54a6 6 0 0 1-6-6V150a6 6 0 0 1 6-6h74v224c0 26.51 21.49 48 48 48h96v42a6 6 0 0 1-6 6zm128-96H182a6 6 0 0 1-6-6V54a6 6 0 0 1 6-6h106v88c0 13.255 10.745 24 24 24h88v202a6 6 0 0 1-6 6zm6-256h-64V48h9.632c1.591 0 3.117.632 4.243 1.757l48.368 48.368a6 6 0 0 1 1.757 4.243V112z"/></svg></span>
+          <span>Copy</span>
+        </button>
+        <!-- TODO: fill in the arXiv identifier once the paper is online. -->
+        <pre id="bibtex-text">@article{kang2026rara,
+  title   = {{RARA}: Robust Policy Fine-Tuning through Retrieval-Anchored
+             Representation Alignment for Robotic Manipulation},
+  author  = {Kang, Xuhui and Lee, Sung-Wook and Zhuang, Yan and Zhong, Tianle and Kuo, Yen-Ling},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container is-max-desktop has-text-centered">
+      Website adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
+    </div>
+  </footer>
+
+  <script>
+    // Each rollout block keeps its current choices (episode, split, task); video sources are templates
+    // such as "{task}_{split}_{ep}_rara.mp4" that are filled in from those choices.
+    function loadRolloutBlock(block) {
+      const state = {};
+      block.querySelectorAll('.switch').forEach(function (group) {
+        const selected = group.querySelector('.is-selected');
+        state[group.dataset.key] = selected.dataset.value;
+      });
+      const videos = block.querySelectorAll('video[data-src]');
+      videos.forEach(function (v) {
+        let src = v.dataset.src;
+        Object.keys(state).forEach(function (key) { src = src.split('{' + key + '}').join(state[key]); });
+        if (!v.src.endsWith(src.slice(1))) {
+          v.src = src;
+          v.load();
+        }
+      });
+      videos.forEach(function (v) {
+        v.currentTime = 0;
+        v.play().catch(function () {});
+      });
+    }
+
+    document.querySelectorAll('.rollout-block').forEach(function (block) {
+      block.querySelectorAll('.switch').forEach(function (group) {
+        group.querySelectorAll('.button').forEach(function (button) {
+          button.addEventListener('click', function () {
+            group.querySelectorAll('.button').forEach(function (b) { b.classList.remove('is-selected'); });
+            button.classList.add('is-selected');
+            loadRolloutBlock(block);
+          });
+        });
+      });
+      loadRolloutBlock(block);
+    });
+
+    function copyBibtex(button) {
+      const text = document.getElementById('bibtex-text').innerText;
+      const label = button.querySelector('span:last-child');
+      navigator.clipboard.writeText(text).then(function () {
+        label.textContent = 'Copied';
+        setTimeout(function () { label.textContent = 'Copy'; }, 1500);
+      });
+    }
+  </script>
+</body>
+
+</html>
